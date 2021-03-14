@@ -2,13 +2,19 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
-
+from django.urls import reverse
 
 User = get_user_model()
 
+
+def get_product_url(obj, viewname):
+    ct_model = obj.__class__._meta.model_name
+    return reverse(viewname, kwargs={'ct_model': ct_model, 'slug': obj.slug})
+
+
 class LatestProductsManager:
     @staticmethod
-    def get_products_for_main_page(self,*args,**kwargs):
+    def get_products_for_main_page(self, *args, **kwargs):
         with_respect_to = kwargs.get('with_respect_to')
         products = []
         ct_models = ContentType.objects.filter(model__in=args)
@@ -16,17 +22,19 @@ class LatestProductsManager:
             model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:5]
             products.extend(model_products)
         if with_respect_to:
-            ct_model = ContentType.objects.filter(model = with_respect_to)
+            ct_model = ContentType.objects.filter(model=with_respect_to)
             if ct_model.exists():
                 if with_respect_to in args:
-                    return sorted(products, key=lambda x: x.__class__._meta.model_name.startswith(with_respect_to), reverse=True)
+                    return sorted(products, key=lambda x: x.__class__._meta.model_name.startswith(with_respect_to),
+                                  reverse=True)
         return products
 
 
 class LatestProducts:
     object = LatestProductsManager()
 
-#Category
+
+# Category
 
 
 class Category(models.Model):
@@ -37,7 +45,7 @@ class Category(models.Model):
         return self.name
 
 
-#Product
+# Product
 
 
 class Product(models.Model):
@@ -45,7 +53,7 @@ class Product(models.Model):
         abstract = True
 
     title = models.CharField(max_length=100, verbose_name='Продукт(Наименование)')
-    slug = models.SlugField(unique=True, verbose_name='Уник URL')
+    slug = models.SlugField(unique=True, verbose_name='Slug(Уник URL)')
     image = models.ImageField(verbose_name='Изобажение')
     description = models.TextField(verbose_name='Описание')
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
@@ -55,7 +63,7 @@ class Product(models.Model):
         return self.title
 
 
-#Products (Sofa,Armchair,Bed,Table)
+# Products (Sofa,Armchair,Bed,Table)
 
 class Sofa(Product):
     materials = models.CharField(max_length=255, verbose_name='Материалы')
@@ -67,7 +75,10 @@ class Sofa(Product):
     color = models.CharField(max_length=50, verbose_name='Цвет')
 
     def __str__(self):
-        return "{} : {}".format(self.category.name,self.title)
+        return "{} : {}".format(self.category.name, self.title)
+
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail')
 
 
 class Bed(Product):
@@ -79,7 +90,10 @@ class Bed(Product):
     color = models.CharField(max_length=50, verbose_name='Цвет')
 
     def __str__(self):
-        return "{} : {}".format(self.category.name,self.title)
+        return "{} : {}".format(self.category.name, self.title)
+
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail')
 
 
 class Table(Product):
@@ -91,8 +105,13 @@ class Table(Product):
     color = models.CharField(max_length=50, verbose_name='Цвет')
 
     def __str__(self):
-        return "{} : {}".format(self.category.name,self.title)
-#Cartproduct
+        return "{} : {}".format(self.category.name, self.title)
+
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail')
+
+
+# Cartproduct
 
 
 class CartProduct(models.Model):
@@ -102,11 +121,13 @@ class CartProduct(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     count = models.PositiveIntegerField(default=1)
-    total_price = models.DecimalField(max_digits=9, decimal_places=2,verbose_name='Цена')
+    total_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
 
     def __str__(self):
         return "Продукт {}".format(self.product.title)
-#Cart
+
+
+# Cart
 
 
 class Cart(models.Model):
@@ -118,19 +139,17 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.id)
 
-#Order
+
+# Order
 
 
-#Customer
+# Customer
 
 
 class Customer(models.Model):
-    user = models.ForeignKey(User,verbose_name='Пользователь', on_delete=models.CASCADE)
-    phone = models.CharField(max_length=15,verbose_name="Номер телефона")
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15, verbose_name="Номер телефона")
     address = models.CharField(max_length=100, verbose_name="Адрес")
 
     def __str__(self):
         return "Покупатель {}{}".format(self.user.first_name, self.user.last_name)
-
-
-
