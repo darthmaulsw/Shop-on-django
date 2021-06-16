@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block head %}<meta http-equiv="refresh" content="2; url={% url 'home'%}"> {% endblock head%}
+{% block title %}Success{% endblock %}
+{% block style%} footer{margin-top:352px;}{% endblock %}
+
+
+{% block header_support%}
+        <li class="nav-item">
+          <a class="nav-link active" href="/support">Support</a>
+        </li>
+{% endblock %}
+
+
+{% block content %}
+<p style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:30px;margin-top:50px;">Your form has been sent!</p>
+<p style="word-wrap: break-word;font-family: 'Montserrat', sans-serif; font-weight:500; font-size:20px;margin-top:20px;margin-right:500px;">Now you are redirecting..</p>
+
+{% endblock content%}
+
+
+

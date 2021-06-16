@@ -1,10 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{{ product.title}}
-</body>
-</html>
+{% extends "base.html" %}
+
+
+{% block title %}{{ product.title}}{% endblock %}
+{% block header_store%}
+        <li class="nav-item">
+          <a class="nav-link active" href="/store">Store</a>
+        </li>
+{% endblock %}
+
+{% block content %}
+<div style="flex-direction:row;display:flex;">
+    <div style="width:50%;">
+        <img src="{{ product.image.url }}" style="width:500px; height:500px; position: -webkit-sticky;position: sticky;top: 10px;">
+    </div>
+
+    <div style="width:50%;margin-left:40px">
+        <p style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:60px">{{ product.category }} | {{ product.title}}</p>
+        <p style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:40px">{{product.price}}$</p>
+        <button style="background:#15d798;border-radius: 16px;width:         300px;height:        50px;color:         #ffffff;display:       inline-block;font:          normal bold 17px/50px 'Montserrat', sans-serif;text-align:    center;">Buy</button>
+    </div>
+
+</div>
+
+
+
+
+<!--<ul style="list-style-type: none; margin-left:60px;" class="main_ul">-->
+<!--    <li>-->
+<!--        <img src="{{ product.image.url }}" style="width:500px; height:500px;">-->
+<!--    </li>-->
+<!--    <li>-->
+<!--        <p style="	font-family: 'Montserrat', sans-serif; font-weight:700; font-size:60px">{{ product.category }} | {{ product.title}}</p>-->
+
+<!--    </li>-->
+<!--</ul>-->
+
+{% endblock content%}

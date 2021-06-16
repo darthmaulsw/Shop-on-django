@@ -1,9 +1,47 @@
 {% extends "base.html" %}
 
 {% block title %}Support{% endblock %}
+    {% block head%}  {% endblock head %}
+{% block style%}
+input[type=email]{
+display:block;
+}
 
+input[type=text]{
+display:block;
+}
+textarea{
+display:block;
+
+}
+
+.support_submit{
+margin-top:10px;
+background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 5px 15px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+{% endblock style %}
 {% block header_support%}
         <li class="nav-item">
           <a class="nav-link active" href="/store">Support</a>
         </li>
 {% endblock %}
+{% block content%}
+<p style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:30px;margin-top:20px;">Contact us</p>
+
+<form action="" method="post">
+   {% csrf_token %}
+   {{ form }}
+   <input type="submit" value="Submit" class="support_submit">
+</form>
+
+{% endblock content%}
+
+
+
