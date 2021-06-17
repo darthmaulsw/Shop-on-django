@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
-from .models import Sofa, Bed, Table
+from .models import Sofa, Bed, Table, Category
 
 
 def redir(request):
@@ -12,7 +12,8 @@ def home_page(request):
 
 
 def store_page(request):
-    return render(request, "store.html")
+    categories = Category.objects.get_categories_for_left_sidebar()
+    return render(request, "store.html", {'categories':categories})
 
 
 def aboutus_page(request):
@@ -36,5 +37,16 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
     template_name = 'product_detail.html'
     slug_url_kwarg = 'slug'
+
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    queryset = Category.objects.all()
+    context_object_name = 'category'
+    template_name = 'category_detail.html'
+    slug_url_kwarg = 'slug'
+
+
 
 

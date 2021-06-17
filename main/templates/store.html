@@ -6,3 +6,43 @@
           <a class="nav-link active" href="/store">Store</a>
         </li>
 {% endblock %}
+{% block style%}
+a:visited,
+a:active,
+a:hover,
+a{
+text-decoration:none;
+outline:none;
+color:black;
+}
+{% endblock %}
+
+{% block content%}
+<div style="flex-direction:row;display:flex;">
+    <div>
+        <table class="table">
+  <thead>
+    <tr>
+      <th scope="col" style="font-family: 'Montserrat', sans-serif; font-weight:600; font-size:20px;">Categories</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for category in categories %}
+    <tr>
+
+        <td style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:17px;"><a href="{{category.url}}">{{category.name }} ({{category.count}})</a></td>
+
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+    </div>
+
+    <div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}
