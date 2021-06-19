@@ -16,6 +16,16 @@
 {% block style%}
 
 {% endblock style %}
+.fullpage{
+overflow:hidden;
+display:flex;
+flex-direction:column;
+min-height:100vh;
+
+}
+footer{
+margin-top:auto;
+}
 .navbar-nav {
 margin-left:100px;
 }
@@ -75,6 +85,7 @@ header > nav{
 /*Ы*/
 footer{
 	background-color: rgb(33, 33, 33);
+
 }
 .down_footer{
 	text-align: center;
@@ -154,13 +165,13 @@ footer > ul{
 .col > img:hover{
 	box-shadow: 0 0 10px rgba(0,0,0,0.65)
 }
-footer{
-margin-bottom:0 px;
-}
+
 
 
   </style>
   <body>
+
+  <div class="fullpage">
     <header>
 <nav class="navbar navbar-expand-xl navbar-light bg-light">
   <div class="container-fluid">
@@ -277,5 +288,6 @@ margin-bottom:0 px;
 </div>
 </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  </div>
   </body>
 </html>
