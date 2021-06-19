@@ -7,17 +7,36 @@
           <a class="nav-link active" href="/store">Store</a>
         </li>
 {% endblock %}
+{% block style%}
+a:visited,
+a:active,
+a:hover,
+a{
+text-decoration:none;
+outline:none;
+color:black;
+}
+{% endblock %}
 
 {% block content %}
 <div style="flex-direction:row;display:flex;">
+
     <div style="width:50%;">
+        <nav style="margin-left:20px;--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}" style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:18px; margin-top:20px;">Home</a></li>
+    <li class="breadcrumb-item"><a href="/store" style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:18px; margin-top:20px;">Store</a></li>
+    <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}" style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:18px; margin-top:20px;">{{ product.category }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page" style="font-family: 'Montserrat', sans-serif; font-weight:300; font-size:18px; "><strong>{{ product.title }}</strong></li>
+  </ol>
+</nav>
         <img src="{{ product.image.url }}" style="width:500px; height:500px; position: -webkit-sticky;position: sticky;top: 10px;">
     </div>
 
     <div style="width:50%;margin-left:40px">
         <p style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:60px">{{ product.category }} | {{ product.title}}</p>
         <p style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:40px">{{product.price}}$</p>
-        <button style="background:#15d798;border-radius: 16px;width:         300px;height:        50px;color:         #ffffff;display:       inline-block;font:          normal bold 17px/50px 'Montserrat', sans-serif;text-align:    center;">Buy</button>
+        <a href="{% url 'add_to_cart' ct_model=ct_model slug=product.slug%}"> <button class="btn btn-outline-success">Добавить к корзину </button></a>
         <p style="font-family: 'Montserrat', sans-serif; font-weight:300; font-size:18px; margin-top:20px;"><p style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:20px; margin-bottom:-10px;">Описание:</p> <br>	{{ product.description }}</p>
         <p style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:20px; margin-top:5px;" >Характеристки:</p>
         {{ product|product_spec}}

@@ -1,8 +1,57 @@
 {% extends 'base.html' %}
 
+{% block style %}
 
-{%block content%}
+.catalog{
+display:flex;
+flex-wrap:wrap;
+flex-direction: row;
+list-style: none;
+}
 
-{{ category.name}}
+.card{
+margin-left:15px;
+margin-bottom:15px;
+    display: block;
 
-{% endblock%}
+
+}
+a:visited,
+a:active,
+a:hover,
+a{
+text-decoration:none;
+outline:none;
+color:black;
+}
+{% endblock %}
+{% block content%}
+<h5 style="font-family: 'Montserrat', sans-serif; font-weight:700; font-size:60px">Категория - {{category.name}}</h5>
+<nav style="margin-left:20px;--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}" style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:18px; margin-top:20px;">Home</a></li>
+    <li class="breadcrumb-item"><a href="/store" style="font-family: 'Montserrat', sans-serif; font-weight:500; font-size:18px; margin-top:20px;">Store</a></li>
+      <li class="breadcrumb-item active" aria-current="page" style="font-family: 'Montserrat', sans-serif; font-weight:300; font-size:18px; "><strong>{{category.name}}</strong></li>
+  </ol>
+</nav>
+   <ul class="catalog">
+
+            {% for product in category_products%}
+
+            <li>
+                    <div class="card" style="width: 225px; height=380px">
+                        <a  href="{{product.get_absolute_url}}"><img src="{{ product.image.url}}" class="card-img-top" alt="..." ></a>
+              <div class="card-body">
+                  <h5 class="card-title"> <a href="{{product.get_absolute_url}}" >{{product.category}} <br>{{ product.title }}</a></h5>
+
+                <a  href="{% url 'add_to_cart' ct_model=product.get_model_name slug=product.slug%}" class="btn btn-primary">Добавить в корзину</a>
+              </div>
+                    </div>
+            </li>
+
+            {% endfor %}
+
+
+
+        </ul>
+{% endblock content %}

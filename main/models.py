@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.urls import reverse
-
+from django.utils import timezone
 User = get_user_model()
 
 def get_models_for_count(*model_names):
@@ -41,9 +41,9 @@ class LatestProducts:
 class CategoryManager(models.Manager):
 
     CATEGORY_NAME_COUNT_NAME ={
-        'Кровать':'bed__count',
-        'Диван':'sofa__count',
-        'Стол':'table__count'
+        'Кровати':'bed__count',
+        'Диваны':'sofa__count',
+        'Столы':'table__count'
     }
 
 
@@ -89,6 +89,11 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_model_name(self):
+        return self.__class__.__name__.lower()
+
+
 
 
 # Products (Sofa,Armchair,Bed,Table)
@@ -107,7 +112,9 @@ class Sofa(Product):
 
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
-
+    
+    
+    
 
 class Bed(Product):
     materials = models.CharField(max_length=255, verbose_name='Материалы')
@@ -122,6 +129,7 @@ class Bed(Product):
 
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
+    
 
 
 class Table(Product):
@@ -137,6 +145,9 @@ class Table(Product):
 
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
+    
+
+
 
 
 # Cartproduct
@@ -149,40 +160,95 @@ class CartProduct(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     count = models.PositiveIntegerField(default=1)
+    qty = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
-
+    
     def __str__(self):
         return "Продукт {}".format(self.content_object.title)
+
+    def save(self, *args, **kwargs):
+        self.total_price = self.qty * self.content_object.price
+        super().save(*args, **kwargs)
+        
+
 
 
 # Cart
 
 
 class Cart(models.Model):
-    owner = models.ForeignKey('Customer', verbose_name="Владелец", on_delete=models.CASCADE)
+    owner = models.ForeignKey('Customer',null=True ,verbose_name="Владелец", on_delete=models.CASCADE)
     products = models.ManyToManyField(CartProduct, blank=True, related_name='related_cart')
     total_products = models.PositiveIntegerField(default=0)
-    total_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
+    total_price = models.DecimalField(max_digits=9, default=0,decimal_places=2, verbose_name='Цена')
     in_order = models.BooleanField(default=False)
     for_anonymous_user = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)
-
-
+    
+ 
 # Order
 
 
 # Customer
 
 
+
 class Customer(models.Model):
+
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
-    phone = models.CharField(max_length=15, verbose_name="Номер телефона")
-    address = models.CharField(max_length=100, verbose_name="Адрес")
+    phone = models.CharField(max_length=20, verbose_name='Номер телефона', null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
+    orders = models.ManyToManyField('Order', verbose_name='Заказы покупателя', related_name='related_order')
 
     def __str__(self):
-        return "Покупатель {}{}".format(self.user.first_name, self.user.last_name)
+        return "Покупатель: {} {}".format(self.user.first_name, self.user.last_name)
 
 
+class Order(models.Model):
 
+    STATUS_NEW = 'new'
+    STATUS_IN_PROGRESS = 'in_progress'
+    STATUS_READY = 'is_ready'
+    STATUS_COMPLETED = 'completed'
+
+    BUYING_TYPE_SELF = 'self'
+    BUYING_TYPE_DELIVERY = 'delivery'
+
+    STATUS_CHOICES = (
+        (STATUS_NEW, 'Новый заказ'),
+        (STATUS_IN_PROGRESS, 'Заказ в обработке'),
+        (STATUS_READY, 'Заказ готов'),
+        (STATUS_COMPLETED, 'Заказ выполнен')
+    )
+
+    BUYING_TYPE_CHOICES = (
+        (BUYING_TYPE_SELF, 'Самовывоз'),
+        (BUYING_TYPE_DELIVERY, 'Доставка')
+    )
+
+    customer = models.ForeignKey(Customer, verbose_name='Покупатель', related_name='related_orders', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255, verbose_name='Имя')
+    last_name = models.CharField(max_length=255, verbose_name='Фамилия')
+    phone = models.CharField(max_length=20, verbose_name='Телефон')
+    cart = models.ForeignKey(Cart, verbose_name='Корзина', on_delete=models.CASCADE, null=True, blank=True)
+    address = models.CharField(max_length=1024, verbose_name='Адрес', null=True, blank=True)
+    status = models.CharField(
+        max_length=100,
+        verbose_name='Статус заказа',
+        choices=STATUS_CHOICES,
+        default=STATUS_NEW
+    )
+    buying_type = models.CharField(
+        max_length=100,
+        verbose_name='Тип заказа',
+        choices=BUYING_TYPE_CHOICES,
+        default=BUYING_TYPE_SELF
+    )
+    comment = models.TextField(verbose_name='Комментарий к заказу', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now=True, verbose_name='Дата создания заказа')
+    order_date = models.DateField(verbose_name='Дата получения заказа', default=timezone.now)
+
+    def __str__(self):
+        return str(self.id)

@@ -15,12 +15,39 @@ text-decoration:none;
 outline:none;
 color:black;
 }
+
+.carousel-item > img{
+    min-height:300px;
+	max-height: 300px;
+
+    min-width:900px;
+	max-width:900px;
+
+}
+.right-side{
+margin-left:100px;
+margin-right: -200px;
+}
+
+.catalog{
+display:flex;
+flex-wrap:wrap;
+flex-direction: row;
+list-style: none;
+}
+
+.card{
+margin-left:15px;
+margin-bottom:15px;
+    display: block;
+
+}
 {% endblock %}
 
 {% block content%}
 <div style="flex-direction:row;display:flex;">
     <div>
-        <table class="table">
+        <table class="table" style="margin-top:120px;">
   <thead>
     <tr>
       <th scope="col" style="font-family: 'Montserrat', sans-serif; font-weight:600; font-size:20px;">Categories</th>
@@ -38,7 +65,31 @@ color:black;
 </table>
     </div>
 
-    <div>
+    <div class="right-side">
+        <ul class="catalog">
+
+            {% for product in products%}
+            <li>
+                    <div class="card" style="width: 225px; height=380px">
+                        <a  href="{{product.get_absolute_url}}"><img src="{{ product.image.url}}" class="card-img-top" alt="..." ></a>
+              <div class="card-body">
+                  <h5 class="card-title"> <a href="{{product.get_absolute_url}}" >{{product.category}} <br>{{ product.title }}</a></h5>
+
+                <a  href="{% url 'add_to_cart' ct_model=product.get_model_name slug=product.slug%}" class="btn btn-primary">Добавить в корзину</a>
+              </div>
+                    </div>
+            </li>
+            {% endfor %}
+
+
+
+        </ul>
+
+</div>
+</div>
+
+
+
 
     </div>
 
